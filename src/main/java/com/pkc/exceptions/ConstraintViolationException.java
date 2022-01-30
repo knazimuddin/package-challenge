@@ -3,7 +3,7 @@ package com.pkc.exceptions;
 import lombok.Data;
 
 @Data
-public class ConstraintViolationException extends RuntimeException{
+public class ConstraintViolationException extends Exception{
 	
 	private String faultyLine;
 	private int lineNumber;

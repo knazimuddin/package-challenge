@@ -16,7 +16,7 @@ import com.pkc.data.ScannedPackage;
 
 
 public class PackagePacker {
-	public static String pack(String file) {
+	public static String pack(String file) throws ConstraintViolationException {
 		//We start by initially reading file creating some objects
 		List<ScannedPackage> packages = scanForPackages(file);
 		String packageCombination = 
@@ -68,7 +68,7 @@ public class PackagePacker {
         return result.isEmpty() ? "-" : result;
 	}
 	
-	private static List<ScannedPackage> scanForPackages(String file) {
+	private static List<ScannedPackage> scanForPackages(String file) throws ConstraintViolationException {
 		FileInputStream fileStream = null;
 		try {
 			fileStream = new FileInputStream(file);//Reading file here
@@ -89,7 +89,7 @@ public class PackagePacker {
 		return parsedLines;
 	}
 	
-	private static ScannedPackage validateAndCreatePackage(String currentLine, int lineSequence) {
+	private static ScannedPackage validateAndCreatePackage(String currentLine, int lineSequence) throws ConstraintViolationException {
 		validateSingleColonPerLine(currentLine, lineSequence);//validation for line to have single colon character
 		
 		List<Package> packages = new ArrayList<>();
@@ -118,25 +118,25 @@ public class PackagePacker {
 		return new ScannedPackage(maxWeight, packages);
 	}
 	
-	private static void validateIndexorMaxItemsInLine(int indexValue, String currentLine, int lineSequence) {
+	private static void validateIndexorMaxItemsInLine(int indexValue, String currentLine, int lineSequence) throws ConstraintViolationException {
 		if( indexValue < 0 || indexValue > PkcConstants.MAX_ITEMS_IN_LINE ) {
 			throw new ConstraintViolationException(String.format("Index value should be between (1, %d) ",PkcConstants.MAX_ITEMS_IN_LINE), currentLine, lineSequence);
 		}
 	}
 	
-	private static void validateMaxWeight(int weight, String currentLine, int lineSequence) {
+	private static void validateMaxWeight(int weight, String currentLine, int lineSequence) throws ConstraintViolationException {
 		if( weight < 0 || weight > PkcConstants.MAX_WEIGHT) {
 			throw new ConstraintViolationException(String.format(" Weight should be between (0, %f)", PkcConstants.MAX_WEIGHT), currentLine, lineSequence);
 		}
 	}
 	
-	private static void validateMaxCost(double cost, String currentLine, int lineSequence) {
+	private static void validateMaxCost(double cost, String currentLine, int lineSequence) throws ConstraintViolationException {
 		if( cost < 0 || cost > PkcConstants.MAX_COST) {
 			throw new ConstraintViolationException(String.format(" Cost should be between (0, %f)", PkcConstants.MAX_COST), currentLine, lineSequence);
 		}
 	}
 	
-	private static void validateSingleColonPerLine(String currentLine, int lineSequence) {
+	private static void validateSingleColonPerLine(String currentLine, int lineSequence) throws ConstraintViolationException {
 		String[] maxWeightAndPackagesSplitValues = currentLine.split(":");
         if (maxWeightAndPackagesSplitValues.length != 2) {
             throw new ConstraintViolationException("Each line must contain only one colon >> : ", currentLine, lineSequence);
